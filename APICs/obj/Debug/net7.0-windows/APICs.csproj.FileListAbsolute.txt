@@ -1,0 +1,16 @@
+W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\APICs.csproj.GenerateResource.cache
+W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\APICs.GeneratedMSBuildEditorConfig.editorconfig
+W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\APICs.AssemblyInfoInputs.cache
+W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\APICs.AssemblyInfo.cs
+W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\APICs.csproj.CoreCompileInputs.cache
+W:\OneDrive - dwwwtan\APICs\APICs\bin\Debug\net7.0-windows\APICs.exe
+W:\OneDrive - dwwwtan\APICs\APICs\bin\Debug\net7.0-windows\APICs.deps.json
+W:\OneDrive - dwwwtan\APICs\APICs\bin\Debug\net7.0-windows\APICs.runtimeconfig.json
+W:\OneDrive - dwwwtan\APICs\APICs\bin\Debug\net7.0-windows\APICs.dll
+W:\OneDrive - dwwwtan\APICs\APICs\bin\Debug\net7.0-windows\APICs.pdb
+W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\APICs.Form1.resources
+W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\APICs.dll
+W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\refint\APICs.dll
+W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\APICs.pdb
+W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\APICs.genruntimeconfig.cache
+W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\ref\APICs.dll
