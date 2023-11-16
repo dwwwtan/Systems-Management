@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Threading;
+using System.Text;
 
 namespace APICs
 {
@@ -14,7 +15,7 @@ namespace APICs
             InitializeComponent();
         }
 
-    //Input Box
+//Input Box to enter the file path
         private string ShowInputBox(string prompt, string title)
         {
             Form inputForm = new Form();
@@ -55,7 +56,12 @@ namespace APICs
             return input;
         }
 
-    //Open File
+//Open File
+    //Import the ShellExecute function  from the shell32 library
+        [DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr ShellExecute(IntPtr hwnd, string lpOperation, string lpFile, string lpParameters, string lpDirectory, int nShowCmd);
+
+    //OpenFile_btn
         private void btnOpenFile_Click(object sender, EventArgs e)
         {
             string fileName = ShowInputBox("Enter file name:", "Open File");
@@ -68,24 +74,25 @@ namespace APICs
                     MessageBox.Show($"Opening file: {filePath}", "Open File");
                     try
                     {
-                        ProcessStartInfo psi = new ProcessStartInfo(filePath);
-                        psi.UseShellExecute = true;
-                        psi.WindowStyle = ProcessWindowStyle.Normal;
-                        Process.Start(psi);
+                        IntPtr result = ShellExecute(IntPtr.Zero, "open", filePath, "", "", 1);
+                        //Check if an error occurs when opening the file
+                        if (result.ToInt32() <= 32)
+                        MessageBox.Show("Error opening file: " + result.ToString());
                     }
                     catch (Exception ex)
-                    {
-                        MessageBox.Show($"Error opening file: {ex.Message}", "Error");
-                    }
+                    { MessageBox.Show($"Error opening file: {ex.Message}", "Error"); }
                 }
-                else
-                {
-                    MessageBox.Show("File not found!", "Error");
-                }
+                else MessageBox.Show("File not found!", "Error");
             }
         }
 
-    //Copy File
+//Copy File
+    //Import the CopyFile function from the kernel32 library.
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CopyFile(string lpExistingFileName, string lpNewFileName, bool bFailIfExists);
+
+    //CopyFile_btn
         private void btnCopyFile_Click(object sender, EventArgs e)
         {
             string[] fileNames = ShowInputBoxCopy("Enter source and destination file names:", "Copy File");
@@ -111,22 +118,28 @@ namespace APICs
 
                     try
                     {
-                        File.Copy(sourceFilePath, destinationFilePath, true);
+                        bool success = CopyFile(sourceFilePath, destinationFilePath, false);
+                        // if (success == true)
+                        if (success)
                         MessageBox.Show($"File copied successfully from {sourceFilePath} to {destinationFilePath}", "Copy File");
+                        else
+                        {
+                            int error = Marshal.GetLastWin32Error();
+                            MessageBox.Show($"Error copying file. Error code: {error}", "Error");
+                        }
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show($"Error copying file: {ex.Message}", "Error");
                     }
                 }
+
                 else
-                {
-                    MessageBox.Show("Source file not found!", "Error");
-                }
+                MessageBox.Show("Source file not found!", "Error");
             }
         }
 
-        //Input Box Copy File
+    //Input Box Copy File
         private string[] ShowInputBoxCopy(string prompt, string title)
         {
             Form inputForm = new Form();
@@ -172,7 +185,12 @@ namespace APICs
             return inputs;
         }
 
-    //Delete File
+//Delete File
+    //Import the DeleteFile function from the kernel 32 library.
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool DeleteFile(string lpFileName);
+
+    //DeleteFile_btn
         private void btnDeleteFile_Click(object sender, EventArgs e)
         {
             string fileName = ShowInputBox("Enter file name:", "Delete File");
@@ -184,8 +202,15 @@ namespace APICs
                 {
                     try
                     {
-                        File.Delete(filePath);
+                        bool success = DeleteFile(filePath);
+                        //if (success == true)
+                        if (success)
                         MessageBox.Show($"File deleted: {filePath}", "Delete File");
+                        else
+                        {
+                            int errorCode = Marshal.GetLastWin32Error();
+                            MessageBox.Show($"Error deleting file. Error code: {errorCode}", "Error");
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -193,16 +218,20 @@ namespace APICs
                     }
                 }
                 else
-                {
-                    MessageBox.Show("File not found!", "Error");
-                }
+                MessageBox.Show("File not found!", "Error");
             }
         }
 
-    // Get File Attributes
+//File Attributes
+    //Import the GetFileAttributesEx function from the kernel32 library.
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetFileAttributes(string lpFileName, out FileAttributes fileAttributes);
+
+    //GetFileAttributes_btn
         private void btnGetFileAttributes_Click(object sender, EventArgs e)
         {
-            string fileName = ShowInputBox("Enter file name:", "Delete File");
+            string fileName = ShowInputBox("Enter file name:", "Get File Attributes");
             if (!string.IsNullOrEmpty(fileName))
             {
                 string filePath = Path.GetFullPath(fileName);
@@ -211,33 +240,48 @@ namespace APICs
                 {
                     try
                     {
-                        FileInfo fileInfo = new FileInfo(filePath);
-                        DateTime created = fileInfo.CreationTime;
-                        DateTime modified = fileInfo.LastWriteTime;
-                        DateTime accessed = fileInfo.LastAccessTime;
-                        string attributeText = $"Name: {fileInfo.Name}\n" +
-                                               $"Size: {(fileInfo.Length / (1024.0 * 1024.0)):0.00} MB\n" +
-                                               $"Type: {fileInfo.Extension}\n" +
-                                               $"Path: {filePath}\n\n" +
-                                               $"Created: {created}\n" +
-                                               $"Modified: {modified}\n" +
-                                               $"Accessed: {accessed}\n";
+                        FileAttributes fileAttributes;
+                        bool success = GetFileAttributes(filePath, out fileAttributes);
+                        if (success)
+                        {
+                            FileInfo fileInfo = new FileInfo(filePath);
+                            DateTime created = fileInfo.CreationTime;
+                            DateTime modified = fileInfo.LastWriteTime;
+                            DateTime accessed = fileInfo.LastAccessTime;
 
-                        MessageBox.Show(attributeText, "File Attributes");
+                            string attributeText = $"Name: {fileInfo.Name}\n" + $"Size: {(fileInfo.Length / (1024.0 * 1024.0)):0.00} MB\n" +
+                                                   $"Type: {fileInfo.Extension}\n" + $"Location: {filePath}\n\n" + $"Created: {created}\n" +
+                                                   $"Modified: {modified}\n" + $"Accessed: {accessed}\n";
+                            MessageBox.Show(attributeText, "File Attributes");
+                        }
+                        else MessageBox.Show("Error getting file attributes", "Error");
                     }
                     catch (Exception ex)
-                    {
-                        MessageBox.Show($"An error occurred while getting the file attributes: {ex.Message}", "Error");
-                    }
+                    { MessageBox.Show($"An error occurred while getting the file attributes: {ex.Message}", "Error"); }
                 }
-                else
-                {
-                    MessageBox.Show("File not found!", "Error");
-                }
+                else { MessageBox.Show("File not found!", "Error"); }
             }
         }
 
-    //Create File
+//Create File
+    //Import the CreateFile function from the kernel32 library.
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern IntPtr CreateFile(
+            string lpFileName,
+            uint dwDesiredAccess,
+            uint dwShareMode,
+            IntPtr lpSecurityAttributes,
+            uint dwCreationDisposition,
+            uint dwFlagsAndAttributes,
+            IntPtr hTemplateFile
+        );
+
+        // Constants for file access and creation disposition
+        public const int GENERIC_WRITE = 0x40000000;
+        public const int OPEN_ALWAYS = 4;
+
+    //CreateFile_btn
         private void btnCreateFile_Click(object sender, EventArgs e)
         {
             string fileName = ShowInputBox("Enter file name:", "Create File");
@@ -246,10 +290,24 @@ namespace APICs
                 string filePath = Path.GetFullPath(fileName);
                 try
                 {
-                    using (File.Create(filePath))
+                    // Call the CreateFile function
+                    IntPtr handle = CreateFile(
+                        filePath,
+                        GENERIC_WRITE,
+                        0,
+                        IntPtr.Zero,
+                        OPEN_ALWAYS,
+                        0,
+                        IntPtr.Zero
+                    );
+                    //check whether the file creation was successful or not.
+                    if (handle != IntPtr.Zero && handle.ToInt64() != -1)
                     {
+                        // File creation successful
                         MessageBox.Show($"Created file: {filePath}", "Create File");
+                        CloseHandle(handle);
                     }
+                    else throw new Exception("Failed to create the file.");
                 }
                 catch (Exception ex)
                 {
@@ -258,26 +316,48 @@ namespace APICs
             }
         }
 
-    //Systems Information
+//Systems Information
+    //GetComputerName
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern bool GetComputerName(StringBuilder lpBuffer, ref uint lpnSize);
+
+    //Info_btn
         private void btnInfo_Click(object sender, EventArgs e)
         {
-            string systemInfo = $"Operating System: {Environment.OSVersion.VersionString}\n" +
-                $"Processor: {Environment.ProcessorCount} cores\n" +
-                $".NET Framework Version: {Environment.Version}\n" +
-                $"Current Directory: {Environment.CurrentDirectory}";
+            StringBuilder systemInfoBuilder = new StringBuilder(256);
+            // Computer Name
+            uint bufferSize = (uint)systemInfoBuilder.Capacity;
+            if (GetComputerName(systemInfoBuilder, ref bufferSize))
+            {
+                string computerName = systemInfoBuilder.ToString();
+                systemInfoBuilder.AppendLine($"Computer Name: {computerName}");
+            }
+            // Operating System
+            OperatingSystem os = Environment.OSVersion;
+            systemInfoBuilder.AppendLine($"Operating System: {os.VersionString}");
+            // Processor
+            int processorCount = Environment.ProcessorCount;
+            systemInfoBuilder.AppendLine($"Processor: {processorCount} cores");
+            // .NET Framework Version
+            Version dotNetVersion = Environment.Version;
+            systemInfoBuilder.AppendLine($".NET Framework Version: {dotNetVersion}");
+            // Current Directory
+            string currentDirectory = Environment.CurrentDirectory;
+            systemInfoBuilder.AppendLine($"Current Directory: {currentDirectory}");
 
-            MessageBox.Show(systemInfo, "System Information");
+            MessageBox.Show(systemInfoBuilder.ToString(), "System Information");
         }
 
-        // Khai báo DllImport để nhập hàm GetDiskFreeSpaceEx
+//Task Manager.
+    //Import the GetDiskFreeSpaceEx function.
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
+        public static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
             out ulong lpFreeBytesAvailable,
             out ulong lpTotalNumberOfBytes,
             out ulong lpTotalNumberOfFreeBytes);
 
-        // Khai báo struct MEMORYSTATUSEX
+    //Import the MEMORYSTATUSEX struct.
         [StructLayout(LayoutKind.Sequential)]
         public struct MEMORYSTATUSEX
         {
@@ -292,8 +372,8 @@ namespace APICs
             public ulong ullAvailExtendedVirtual;
         }
 
-        // Khai báo DllImport để nhập hàm GlobalMemoryStatusEx
-        [DllImport("kernel32.dll")]
+    //Import the GlobalMemoryStatusEx function.
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
 
@@ -303,12 +383,12 @@ namespace APICs
         //ROM
             string driveName = "C:\\";
             ulong freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes;
-            //Gọi hàm API GetDiskFreeSpaceEx
+            //Call the GetDiskFreeSpaceEx function.
             bool diskSuccess = GetDiskFreeSpaceEx(driveName, out freeBytesAvailable, out totalNumberOfBytes, out totalNumberOfFreeBytes);
         //RAM
             MEMORYSTATUSEX memoryStatus = new MEMORYSTATUSEX();
             memoryStatus.dwLength = (uint)Marshal.SizeOf(memoryStatus);
-            // Gọi hàm API GlobalMemoryStatusEx
+            //Call the GlobalMemoryStatusEx function.
             bool memorySuccess = GlobalMemoryStatusEx(ref memoryStatus);
             bool success = diskSuccess && memorySuccess;
 
@@ -327,9 +407,14 @@ namespace APICs
             else
             {
                 int errorCode = Marshal.GetLastWin32Error();
-                Console.WriteLine("Failed to get disk information. Error code: " + errorCode);
+                MessageBox.Show($"Failed to get disk information. Error code: " + errorCode);
             }
         }
+
+// Import the CloseHandle function from the kernel32 library
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool CloseHandle(IntPtr hObject);
+
         private void Form1_Load(object sender, EventArgs e)
         {
 

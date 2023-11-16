@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "W:\\OneDrive - dwwwtan\\APICS\\APICs\\APICs.csproj": {}
+    "W:\\OneDrive - dwwwtan\\APICs\\APICs\\APICs.csproj": {}
   },
   "projects": {
-    "W:\\OneDrive - dwwwtan\\APICS\\APICs\\APICs.csproj": {
+    "W:\\OneDrive - dwwwtan\\APICs\\APICs\\APICs.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "W:\\OneDrive - dwwwtan\\APICS\\APICs\\APICs.csproj",
+        "projectUniqueName": "W:\\OneDrive - dwwwtan\\APICs\\APICs\\APICs.csproj",
         "projectName": "APICs",
-        "projectPath": "W:\\OneDrive - dwwwtan\\APICS\\APICs\\APICs.csproj",
+        "projectPath": "W:\\OneDrive - dwwwtan\\APICs\\APICs\\APICs.csproj",
         "packagesPath": "C:\\Users\\dwwwt\\.nuget\\packages\\",
-        "outputPath": "W:\\OneDrive - dwwwtan\\APICS\\APICs\\obj\\",
+        "outputPath": "W:\\OneDrive - dwwwtan\\APICs\\APICs\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

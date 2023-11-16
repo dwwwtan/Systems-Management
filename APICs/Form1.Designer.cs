@@ -126,7 +126,7 @@ namespace APICs
             Controls.Add(btnOpenFile);
             Margin = new Padding(4, 5, 4, 5);
             Name = "Form1";
-            Text = "File Manager";
+            Text = "Systems Managerment";
             Load += Form1_Load;
             ResumeLayout(false);
         }

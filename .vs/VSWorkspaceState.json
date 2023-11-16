@@ -1,6 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\APICs",
+    "\\APICs\\bin",
+    "\\APICs\\obj"
   ],
+  "SelectedNode": "\\APICs\\Form1.cs",
   "PreviewInSolutionExplorer": false
 }
