@@ -14,3 +14,4 @@ W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\refint\APICs.dll
 W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\APICs.pdb
 W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\APICs.genruntimeconfig.cache
 W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\ref\APICs.dll
+W:\OneDrive - dwwwtan\APICs\APICs\obj\Debug\net7.0-windows\APICs.sourcelink.json

@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Threading;
 using System.Text;
+using System.Runtime.Intrinsics.X86;
+using System.Reflection.Metadata;
 
 namespace APICs
 {
@@ -86,9 +88,9 @@ namespace APICs
             }
         }
 
-//Copy File
+    //Copy File
     //Import the CopyFile function from the kernel32 library.
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CopyFile(string lpExistingFileName, string lpNewFileName, bool bFailIfExists);
 
@@ -265,21 +267,21 @@ namespace APICs
 
 //Create File
     //Import the CreateFile function from the kernel32 library.
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern IntPtr CreateFile(
+        public static extern bool CreateFile(
             string lpFileName,
             uint dwDesiredAccess,
-            uint dwShareMode,
+            FileShare dwShareMode,
             IntPtr lpSecurityAttributes,
             uint dwCreationDisposition,
-            uint dwFlagsAndAttributes,
+            FileAttributes dwFlagsAndAttributes,
             IntPtr hTemplateFile
         );
-
+        //An error occurred while creating the file: Cannot marshal 'return value': Invalid managed/unmanaged combination(Int/lJlnt must be paired with Syslnt or SyslJlnt).
         // Constants for file access and creation disposition
-        public const int GENERIC_WRITE = 0x40000000;
-        public const int OPEN_ALWAYS = 4;
+        public const uint GENERIC_WRITE = 0x40000000;
+        public const uint OPEN_ALWAYS = 4;
 
     //CreateFile_btn
         private void btnCreateFile_Click(object sender, EventArgs e)
@@ -291,21 +293,20 @@ namespace APICs
                 try
                 {
                     // Call the CreateFile function
-                    IntPtr handle = CreateFile(
+                    bool result = CreateFile(
                         filePath,
                         GENERIC_WRITE,
-                        0,
+                        FileShare.None,
                         IntPtr.Zero,
                         OPEN_ALWAYS,
-                        0,
+                        FileAttributes.Normal,
                         IntPtr.Zero
                     );
                     //check whether the file creation was successful or not.
-                    if (handle != IntPtr.Zero && handle.ToInt64() != -1)
+                    if (result)
                     {
                         // File creation successful
                         MessageBox.Show($"Created file: {filePath}", "Create File");
-                        CloseHandle(handle);
                     }
                     else throw new Exception("Failed to create the file.");
                 }
@@ -377,11 +378,11 @@ namespace APICs
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
 
-    //Task Manager
+    //TaskManager_btn
         private void btnTaskManager_Click(object sender, EventArgs e)
         {
         //ROM
-            string driveName = "C:\\";
+            string driveName = "W:\\";
             ulong freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes;
             //Call the GetDiskFreeSpaceEx function.
             bool diskSuccess = GetDiskFreeSpaceEx(driveName, out freeBytesAvailable, out totalNumberOfBytes, out totalNumberOfFreeBytes);
@@ -409,9 +410,10 @@ namespace APICs
                 int errorCode = Marshal.GetLastWin32Error();
                 MessageBox.Show($"Failed to get disk information. Error code: " + errorCode);
             }
-        }
 
-// Import the CloseHandle function from the kernel32 library
+    }
+
+    // Import the CloseHandle function from the kernel32 library
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool CloseHandle(IntPtr hObject);
 

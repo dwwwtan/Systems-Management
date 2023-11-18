@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("APICs")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4a99c24f03e1192fc27bf6872939554852e37335")]
 [assembly: System.Reflection.AssemblyProductAttribute("APICs")]
 [assembly: System.Reflection.AssemblyTitleAttribute("APICs")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
